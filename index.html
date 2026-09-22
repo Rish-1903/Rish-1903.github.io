@@ -1,328 +1,438 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rishabh Dang | Computer Science Researcher</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --secondary: #10b981;
-      --dark: #1e293b;
-      --light: #f8fafc;
-      --gray: #64748b;
-      --light-gray: #e2e8f0;
-      --sidebar-width: 300px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rishabh Dang — Robotics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E2A4D;
+    --ink-2:#153a63;
+    --ink-3:#0a2140;
+    --paper:#EDEFF3;
+    --paper-dim:#9FB0C6;
+    --accent:#FF5A1F;
+    --grid: rgba(237,239,243,0.07);
+    --grid-strong: rgba(237,239,243,0.14);
+    box-sizing:border-box;
+    padding-top: env(safe-area-inset-top,0px);
+    padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; scroll-padding-top: calc(72px + env(safe-area-inset-top,0px));}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--accent); color:var(--ink-3); }
+  a{ color:inherit; }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  /* corner registration marks, like a drawing sheet */
+  .reg{
+    position:fixed; width:22px; height:22px; z-index:40; pointer-events:none;
+    opacity:.55;
+  }
+  .reg::before,.reg::after{ content:""; position:absolute; background:var(--paper-dim); }
+  .reg::before{ width:100%; height:1px; top:50%; }
+  .reg::after{ width:1px; height:100%; left:50%; }
+  .reg.tl{ top:14px; left:14px; }
+  .reg.tr{ top:14px; right:14px; }
+  .reg.bl{ bottom:14px; left:14px; }
+  .reg.br{ bottom:14px; right:14px; }
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f1f5f9;
-      color: var(--dark);
-      line-height: 1.6;
-    }
+  /* HUD coordinate readout */
+  #hud{
+    position:fixed; top: calc(14px + env(safe-area-inset-top,0px)); right:44px; z-index:41;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--paper-dim);
+    letter-spacing:.02em; text-align:right; pointer-events:none;
+  }
+  #hud span{ color:var(--accent); }
 
-    .container {
-      display: flex;
-      min-height: 100vh;
-    }
+  header.nav{
+    position:sticky; top:0; z-index:30;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: calc(18px + env(safe-area-inset-top,0px)) 44px 18px;
+    background: linear-gradient(var(--ink) 78%, transparent);
+    backdrop-filter: blur(6px);
+  }
+  .brand{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:.03em;
+    color:var(--paper);
+  }
+  .brand b{ color:var(--accent); font-weight:600; }
+  nav.links{ display:flex; gap:28px; font-family:'IBM Plex Mono', monospace; font-size:12.5px; }
+  nav.links a{ text-decoration:none; color:var(--paper-dim); border-bottom:1px solid transparent; padding-bottom:2px; transition:color .15s, border-color .15s; }
+  nav.links a:hover{ color:var(--paper); border-color:var(--accent); }
+  @media (max-width:680px){ nav.links{ display:none; } }
 
-    /* Sidebar Styles */
-    .sidebar {
-      width: var(--sidebar-width);
-      background: linear-gradient(135deg, var(--dark), #0f172a);
-      color: white;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: fixed;
-      height: 100vh;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    }
+  main{ max-width:900px; margin:0 auto; padding: 0 44px 120px; }
+  @media (max-width:680px){ main{ padding:0 22px 100px; } header.nav{ padding:16px 22px; } #hud{ right:22px; } }
 
-    .profile-pic {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid var(--primary);
-      margin-bottom: 1.5rem;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-    }
+  .sheet{ position:relative; padding: 86px 0 0; border-top:1px solid var(--grid-strong); }
+  .sheet:first-of-type{ border-top:none; }
+  .sheet-tag{
+    position:absolute; top:32px; left:0;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--paper-dim);
+    letter-spacing:.05em;
+  }
+  .sheet-tag span{ color:var(--accent); }
 
-    .sidebar h1 {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-      text-align: center;
-      color: white;
-    }
+  h1,h2,h3{ font-family:'IBM Plex Sans', sans-serif; font-weight:600; margin:0; letter-spacing:-0.01em; }
 
-    .sidebar p {
-      color: var(--light-gray);
-      font-size: 0.9rem;
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
+  /* HERO */
+  .hero{ padding-top:64px; }
+  .hero-grid{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center; }
+  @media (max-width:780px){ .hero-grid{ grid-template-columns:1fr; } }
+  .kicker{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--accent);
+    letter-spacing:.04em; margin-bottom:18px; display:flex; align-items:center; gap:10px;
+  }
+  .kicker::before{ content:""; width:22px; height:1px; background:var(--accent); display:inline-block; }
+  h1.title{ font-size:clamp(2.4rem, 5.4vw, 3.6rem); line-height:1.06; color:var(--paper); }
+  .hero p.lede{ margin-top:22px; max-width:52ch; color:var(--paper-dim); font-size:1.05rem; }
+  .hero-actions{ margin-top:32px; display:flex; gap:14px; flex-wrap:wrap; }
+  .btn{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; letter-spacing:.03em;
+    padding:12px 20px; border:1px solid var(--paper-dim); color:var(--paper); text-decoration:none;
+    transition:border-color .15s, background .15s, color .15s;
+  }
+  .btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .btn.solid{ background:var(--accent); border-color:var(--accent); color:var(--ink-3); font-weight:600; }
+  .btn.solid:hover{ background:#ff7440; color:var(--ink-3); }
 
-    .contact-links {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
+  /* robot arm svg */
+  .rig{ width:100%; aspect-ratio:1/1; max-width:420px; margin:0 auto; }
+  .rig svg{ width:100%; height:100%; overflow:visible; }
+  .rig .link{ stroke:var(--paper); stroke-width:3; fill:none; stroke-linecap:round; }
+  .rig .joint{ fill:var(--ink); stroke:var(--accent); stroke-width:2.5; }
+  .rig .joint-core{ fill:var(--accent); }
+  .rig .dim{ stroke:var(--paper-dim); stroke-width:1; stroke-dasharray:3 3; opacity:.6; }
+  .rig .label{ font-family:'IBM Plex Mono', monospace; font-size:9px; fill:var(--paper-dim); }
+  .rig .frame{ stroke:var(--grid-strong); stroke-width:1; fill:none; }
+  .arm-anim{ transform-box:fill-box; transform-origin:center; }
+  @media (prefers-reduced-motion: no-preference){
+    .arm-anim{ animation: settle 1.2s cubic-bezier(.2,.8,.2,1) both; }
+  }
+  @keyframes settle{ from{ opacity:0; transform:translateY(10px) rotate(-3deg);} to{ opacity:1; transform:translateY(0) rotate(0);} }
 
-    .contact-links a {
-      color: white;
-      font-size: 1.2rem;
-      transition: all 0.3s ease;
-    }
+  /* ABOUT */
+  .about-grid{ display:grid; grid-template-columns: 1fr 220px; gap:48px; margin-top:26px; }
+  @media (max-width:780px){ .about-grid{ grid-template-columns:1fr; } }
+  .about-grid p{ color:var(--paper-dim); max-width:62ch; }
+  .about-grid p + p{ margin-top:14px; }
+  .specs{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--paper-dim); }
+  .specs dt{ color:var(--paper); margin-top:14px; }
+  .specs dt:first-child{ margin-top:0; }
+  .specs dd{ margin:2px 0 0; }
 
-    .contact-links a:hover {
-      color: var(--primary);
-      transform: translateY(-2px);
-    }
+  /* INTERESTS */
+  .interest-list{ margin-top:28px; display:grid; gap:1px; background:var(--grid-strong); border:1px solid var(--grid-strong); }
+  .interest{ background:var(--ink); padding:22px 24px; display:grid; grid-template-columns:64px 1fr; gap:20px; align-items:start; }
+  .interest .idx{ font-family:'IBM Plex Mono', monospace; color:var(--accent); font-size:13px; padding-top:2px; }
+  .interest h3{ font-size:1.05rem; color:var(--paper); }
+  .interest p{ margin:6px 0 0; color:var(--paper-dim); font-size:.95rem; max-width:60ch; }
 
-    address {
-      font-style: normal;
-      font-size: 0.85rem;
-      color: var(--light-gray);
-      text-align: center;
-      margin-top: auto;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      width: 100%;
-    }
+  /* COURSEWORK / TRAINING */
+  .track{ margin-top:30px; position:relative; padding-left:26px; }
+  .track::before{ content:""; position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--grid-strong); }
+  .stop{ position:relative; padding-bottom:30px; }
+  .stop:last-child{ padding-bottom:0; }
+  .stop::before{ content:""; position:absolute; left:-26px; top:4px; width:11px; height:11px; border-radius:50%; background:var(--ink); border:2px solid var(--accent); }
+  .stop h3{ font-size:1rem; color:var(--paper); }
+  .stop .meta{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--accent); margin-top:3px; }
+  .stop p{ color:var(--paper-dim); margin-top:8px; font-size:.95rem; max-width:58ch; }
 
-    /* Main Content Styles */
-    .content {
-      flex: 1;
-      margin-left: var(--sidebar-width);
-      padding: 3rem;
-      max-width: 900px;
-    }
+  /* PROJECTS */
+  .proj-grid{ margin-top:28px; display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--grid-strong); border:1px solid var(--grid-strong); }
+  @media (max-width:680px){ .proj-grid{ grid-template-columns:1fr; } }
+  .proj{ background:var(--ink); padding:26px; min-height:170px; display:flex; flex-direction:column; justify-content:space-between; }
+  .proj .tag{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--paper-dim); }
+  .proj h3{ margin-top:10px; font-size:1.05rem; color:var(--paper); }
+  .proj p{ color:var(--paper-dim); font-size:.9rem; margin-top:8px; }
+  .proj .status{ margin-top:16px; font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--accent); }
 
-    section {
-      margin-bottom: 3rem;
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
+  /* PUBLICATIONS empty state */
+  .empty{
+    margin-top:26px; border:1px dashed var(--grid-strong); padding:30px 26px;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--paper-dim);
+  }
+  .empty b{ color:var(--paper); font-family:'IBM Plex Sans', sans-serif; font-weight:600; display:block; margin-bottom:6px; font-size:14px; }
 
-    h2 {
-      color: var(--primary);
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
-      position: relative;
-      padding-bottom: 0.5rem;
-    }
+  /* CONTACT */
+  .contact-grid{ margin-top:26px; display:flex; flex-wrap:wrap; gap:14px; }
+  .clink{
+    display:flex; align-items:center; gap:10px; padding:14px 20px; border:1px solid var(--grid-strong);
+    text-decoration:none; font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--paper);
+    transition:border-color .15s, color .15s;
+  }
+  .clink:hover{ border-color:var(--accent); color:var(--accent); }
 
-    h2::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 50px;
-      height: 3px;
-      background: var(--primary);
-      border-radius: 3px;
-    }
-
-    p {
-      margin-bottom: 1rem;
-      color: var(--gray);
-    }
-
-    ul {
-      list-style-position: inside;
-      margin-left: 1rem;
-    }
-
-    li {
-      margin-bottom: 0.5rem;
-      color: var(--gray);
-    }
-
-    .pub, .proj {
-      margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--light-gray);
-    }
-
-    .pub:last-child, .proj:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .pub h3, .proj h3 {
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-      color: var(--dark);
-    }
-
-    .pub p, .proj p {
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-      color: var(--gray);
-    }
-
-    .btn {
-      display: inline-block;
-      background: var(--primary);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      text-decoration: none;
-      font-size: 0.85rem;
-      margin-right: 0.5rem;
-      margin-top: 0.5rem;
-      transition: all 0.3s ease;
-    }
-
-    .btn:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-        padding: 1.5rem;
-      }
-
-      .content {
-        margin-left: 0;
-        padding: 1.5rem;
-      }
-
-      .profile-pic {
-        width: 120px;
-        height: 120px;
-      }
-    }
-
-    /* Animation */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    section {
-      animation: fadeIn 0.6s ease forwards;
-    }
-
-    section:nth-child(1) { animation-delay: 0.1s; }
-    section:nth-child(2) { animation-delay: 0.2s; }
-    section:nth-child(3) { animation-delay: 0.3s; }
-    section:nth-child(4) { animation-delay: 0.4s; }
-    section:nth-child(5) { animation-delay: 0.5s; }
-    section:nth-child(6) { animation-delay: 0.6s; }
-    section:nth-child(7) { animation-delay: 0.7s; }
-  </style>
+  footer{
+    max-width:900px; margin:0 auto; padding:40px 44px 60px;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--paper-dim);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+  @media (max-width:680px){ footer{ padding:34px 22px 50px; } }
+</style>
 </head>
 <body>
-  <div class="container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <img src="assets/profile.jpeg" alt="Profile Picture" class="profile-pic">
-      <h1>Rishabh Dang</h1>
-      <p>B.Tech CSE @ NSUT | Research Intern @ LCAS Lab</p>
-      <div class="contact-links">
-        <a href="mailto:dangrishabh4@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
-        <a href="https://www.linkedin.com/in/rishabh-dang-1b167625a/" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-        <a href="https://github.com/Rish-1903" aria-label="GitHub"><i class="fab fa-github"></i></a>
+
+<div class="reg tl"></div><div class="reg tr"></div><div class="reg bl"></div><div class="reg br"></div>
+<div id="hud">X <span id="hx">000</span>&nbsp;&nbsp;Y <span id="hy">000</span></div>
+
+<header class="nav">
+  <div class="brand">RISHABH&nbsp;DANG <b>/</b> ROBOTICS</div>
+  <nav class="links">
+    <a href="#about">About</a>
+    <a href="#interests">Interests</a>
+    <a href="#training">Education</a>
+    <a href="#experience">Experience</a>
+    <a href="#publications">Publications</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="sheet hero" id="top">
+    <div class="hero-grid">
+      <div>
+        <div class="kicker">AI &amp; ROBOTICS RESEARCHER</div>
+        <h1 class="title">Perceiving, reasoning,<br>acting — embodied.</h1>
+        <p class="lede">I'm Rishabh Dang, an MSc student in Robotics and Intelligent Systems at NTU Singapore, researching uncertainty-aware perception and manipulation for autonomous systems that operate in dynamic, real-world environments.</p>
+        <div class="hero-actions">
+          <a class="btn solid" href="#projects">View projects</a>
+          <a class="btn" href="#contact">Get in touch</a>
+        </div>
       </div>
-      <address>
-        Gurugram, Haryana - 122003, India
-      </address>
-    </aside>
+      <div class="rig" aria-hidden="true">
+        <svg viewBox="0 0 300 300">
+          <rect class="frame" x="10" y="10" width="280" height="280"/>
+          <line class="dim" x1="40" y1="270" x2="230" y2="270"/>
+          <line class="dim" x1="40" y1="264" x2="40" y2="276"/>
+          <line class="dim" x1="230" y1="264" x2="230" y2="276"/>
+          <text class="label" x="118" y="286">REACH 480mm</text>
 
-    <!-- Main content -->
-    <main class="content">
-      <section class="about">
-        <h2>About</h2>
-        <p>
-          I am a Computer Science undergraduate at NSUT with research experience in Robotics, AI, and Computer Vision. 
-          I have worked on projects in OCR, 3D Reconstruction, Multi-Object Tracking, and Self-Supervised Learning, 
-          with publications in Springer and submissions to IEEE.
-        </p>
-      </section>
+          <g class="arm-anim">
+            <circle class="joint" cx="90" cy="230" r="10"/>
+            <circle class="joint-core" cx="90" cy="230" r="3"/>
+            <line class="link" x1="90" y1="230" x2="150" y2="150"/>
+            <circle class="joint" cx="150" cy="150" r="9"/>
+            <circle class="joint-core" cx="150" cy="150" r="3"/>
+            <line class="link" x1="150" y1="150" x2="215" y2="105"/>
+            <circle class="joint" cx="215" cy="105" r="8"/>
+            <circle class="joint-core" cx="215" cy="105" r="3"/>
+            <line class="link" x1="215" y1="105" x2="252" y2="70"/>
+            <circle class="joint" cx="252" cy="70" r="6"/>
+            <circle class="joint-core" cx="252" cy="70" r="2.5"/>
+            <line class="dim" x1="90" y1="230" x2="90" y2="248"/>
+            <text class="label" x="66" y="262">BASE J0</text>
+            <text class="label" x="222" y="55">EE</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
 
-      <section class="interests">
-        <h2>Research Interests</h2>
-        <ul>
-          <li>Robotics & Autonomous Systems</li>
-          <li>Computer Vision for Robotics</li>
-          <li>Deep Learning & Representation Learning</li>
-          <li>SLAM & 3D Perception</li>
-        </ul>
-      </section>
+  <section class="sheet" id="about">
+    <div class="sheet-tag">SHEET <span>01</span> / 07 — PROFILE</div>
+    <h2 style="font-size:1.6rem;">About</h2>
+    <div class="about-grid">
+      <div>
+        <p>I'm interested in Intelligent Systems, Embodied AI, autonomous systems, and advanced perception — building adaptive, autonomous systems that can perceive, reason, learn, and interact effectively with dynamic environments.</p>
+        <p>I hold a B.Tech in Computer Science from NSUT Delhi and am currently pursuing an MSc in Robotics and Intelligent Systems at NTU Singapore, where I research uncertainty-aware 3D object tracking for robotic manipulation at the Robots Under Uncertainty Lab (RUNES), advised by Professor Lee JongSeok. My background spans 3D reconstruction (Gaussian Splatting, NeRF), object detection and tracking, and applied deep learning across academic and interdisciplinary research settings.</p>
+      </div>
+      <dl class="specs">
+        <dt>FOCUS</dt><dd>Perception, Embodied AI</dd>
+        <dt>STATUS</dt><dd>MSc student &amp; researcher, RUNES Lab</dd>
+        <dt>LOCATION</dt><dd>Singapore</dd>
+        <dt>STACK</dt><dd>Python, C++, PyTorch, OpenCV</dd>
+      </dl>
+    </div>
+  </section>
 
-      <section class="news">
-        <h2>News</h2>
-        <ul>
-          <li><b>2025:</b> Joined Asian Institute of Transport Development as AI Intern</li>
-          <li><b>2025:</b> Joined LCAS Lab, University of Lincoln, as Robotics Perception Research Intern .</li>
-          <li><b>2025:</b> Submitted paper to IEEE Journal of Oceanic Engineering (PINN-SSL-MMF).</li>
-          <li><b>2025:</b> Published "UrduDigitsCNN" in Springer CCIS.</li>
-          <li><b>2024:</b> Computer Vision Research Intern at IIITD.</li>
-         
-        </ul>
-      </section>
+  <section class="sheet" id="interests">
+    <div class="sheet-tag">SHEET <span>02</span> / 07 — RESEARCH INTERESTS</div>
+    <h2 style="font-size:1.6rem;">Research interests</h2>
+    <div class="interest-list">
+      <div class="interest">
+        <div class="idx">01</div>
+        <div><h3>Embodied AI &amp; autonomous systems</h3><p>Building adaptive systems that perceive, reason, and act in dynamic, real-world environments rather than static, controlled ones.</p></div>
+      </div>
+      <div class="interest">
+        <div class="idx">02</div>
+        <div><h3>Uncertainty-aware perception &amp; manipulation</h3><p>Modeling uncertainty in 3D object tracking to make robotic manipulation more robust under noisy, ambiguous sensing conditions.</p></div>
+      </div>
+      <div class="interest">
+        <div class="idx">03</div>
+        <div><h3>3D reconstruction &amp; simulation</h3><p>Generating simulation-ready 3D environments from real-world video using Gaussian Splatting and Neural Radiance Fields (NeRF).</p></div>
+      </div>
+      <div class="interest">
+        <div class="idx">04</div>
+        <div><h3>Advanced perception</h3><p>Object detection, tracking, and video saliency detection — turning raw visual and RGB-D data into structured scene understanding.</p></div>
+      </div>
+    </div>
+  </section>
 
-      <section class="publications">
-        <h2>Selected Publications</h2>
-        <div class="pub">
-          <h3>UrduDigitsCNN: Bridging the Gap in Numeral Recognition</h3>
-          <p><em>Rishabh Dang</em>, et al. — Springer CCIS, 2025</p>
-          <a href="https://doi.org/10.1007/978-3-031-92041-7_18" class="btn">DOI</a>
+  <section class="sheet" id="training">
+    <div class="sheet-tag">SHEET <span>03</span> / 07 — EDUCATION & TRAINING</div>
+    <h2 style="font-size:1.6rem;">Education & training</h2>
+    <div class="track">
+      <div class="stop">
+        <h3>MSc, Robotics and Intelligent Systems</h3>
+        <div class="meta">NANYANG TECHNOLOGICAL UNIVERSITY (NTU), SINGAPORE · AUG 2026 – PRESENT</div>
+        <p>Coursework: Vision, Robotics Manipulation and Advanced Control, Applied Mathematics.</p>
+      </div>
+      <div class="stop">
+        <h3>B.Tech, Computer Science</h3>
+        <div class="meta">NETAJI SUBHAS UNIVERSITY OF TECHNOLOGY (NSUT), DELHI · NOV 2022 – JUNE 2026 · GPA 8.2/10.0</div>
+        <p>Coursework: Artificial Intelligence, Machine Learning, Deep Learning, Computer Vision, Optimization, Data Structures &amp; Algorithms.</p>
+      </div>
+      <div class="stop">
+        <h3>State Estimation for Robotics</h3>
+        <div class="meta">UNIVERSITY OF TORONTO — SELF-STUDY</div>
+        <p>Probabilistic state estimation for robotic systems — filtering, smoothing, and pose estimation from sensor data.</p>
+      </div>
+      <div class="stop">
+        <h3>First Principles of Computer Vision (FPCV)</h3>
+        <div class="meta">TEXTBOOK — COMPLETED</div>
+        <p>Foundational study of computer vision: image formation, geometry, feature extraction, and the mathematics underlying visual perception.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="experience">
+    <div class="sheet-tag">SHEET <span>04</span> / 07 — RESEARCH EXPERIENCE</div>
+    <h2 style="font-size:1.6rem;">Research experience</h2>
+    <div class="track">
+      <div class="stop">
+        <h3>Researcher — Robots Under Uncertainty Lab (RUNES)</h3>
+        <div class="meta">NTU SINGAPORE · SEP 2026 – PRESENT</div>
+        <p>Working on uncertainty-aware 3D object tracking for robotics manipulation. Advised by Professor Lee JongSeok.</p>
+      </div>
+      <div class="stop">
+        <h3>Research Intern — Lincoln Centre for Autonomous Systems (LCAS)</h3>
+        <div class="meta">LINCOLN, UK · FEB 2025 – SEP 2025</div>
+        <p>Engineered a 3D reconstruction pipeline using Gaussian Splatting and NeRF; automated generation of simulation-ready 3D farms with 100+ plants via algorithmic mesh separation; designed and integrated a virtual robot with sensor modules for autonomous systems testing in large-scale simulations.</p>
+      </div>
+      <div class="stop">
+        <h3>Undergraduate Research Assistant — Advanced Process Control Lab</h3>
+        <div class="meta">NSUT DELHI, INDIA · MAR 2025 – DEC 2025</div>
+        <p>Advancing state-of-the-art benchmarks in RGB-D video saliency object detection; developing high-performance pipelines for data preprocessing and model training.</p>
+      </div>
+      <div class="stop">
+        <h3>Research Intern — IIIT Delhi (IIITD)</h3>
+        <div class="meta">DELHI, INDIA · MAY 2024 – JUL 2024</div>
+        <p>Designed a self-supervised learning model to predict wave breakpoints from visual data; implemented and benchmarked object detection and tracking models in PyTorch and OpenCV.</p>
+      </div>
+      <div class="stop">
+        <h3>Research Assistant — NSUT Delhi</h3>
+        <div class="meta">DELHI, INDIA · JAN 2024 – MAR 2024</div>
+        <p>Built a CNN for OCR on handwritten Urdu numerals, achieving a validated 99.3% accuracy against existing OCR benchmarks.</p>
+      </div>
+      <div class="stop">
+        <h3>AI Intern — Asian Institute of Transport and Development</h3>
+        <div class="meta">NEW DELHI, INDIA · MAY 2025 – JUL 2025</div>
+        <p>Built predictive ML models for accident hotspot detection (85% accuracy); deployed forecasting models and conducted road safety audits via the iRAP methodology across urban networks.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="publications">
+    <div class="sheet-tag">SHEET <span>05</span> / 07 — PUBLICATIONS</div>
+    <h2 style="font-size:1.6rem;">Publications</h2>
+    <div class="track">
+      <div class="stop">
+        <h3>Plant2Sim3D: From Real Plants to Simulated Worlds via Video-Driven 3D Mesh Generation</h3>
+        <div class="meta">IEEE/RSJ IROS — AGRIROBOTICS WORKSHOP, 2025</div>
+        <p>A video-driven pipeline for generating simulation-ready 3D plant meshes from real footage.</p>
+      </div>
+      <div class="stop">
+        <h3>UrduDigitsCNN: Bridging the Gap in Numeral Recognition</h3>
+        <div class="meta">DANG, R., MISGAR, M. M., &amp; BHATIA, M. P. S. — RECENT TRENDS IN AI-ENABLED TECHNOLOGIES (SPRINGER CCIS, VOL. 2322), 2025</div>
+        <p>A CNN-based approach for handwritten Urdu numeral recognition, benchmarked against existing OCR systems.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="projects">
+    <div class="sheet-tag">SHEET <span>06</span> / 07 — ACHIEVEMENTS & SKILLS</div>
+    <h2 style="font-size:1.6rem;">Achievements & skills</h2>
+    <div class="proj-grid">
+      <div class="proj">
+        <div>
+          <div class="tag">HACKATHON</div>
+          <h3>Winner, Epoch IIITD Hackathon (2024)</h3>
+          <p>Ranked 1st among 100+ teams for image segmentation using coresets.</p>
         </div>
-        <div class="pub">
-          <h3>PINN-SSL-MMF: A Unified Deep Learning Framework for Bathymetry Mapping</h3>
-          <p><em>Rishabh Dang</em>, et al. — Submitted to IEEE Journal of Oceanic Engineering, 2025</p>
+      </div>
+      <div class="proj">
+        <div>
+          <div class="tag">KAGGLE</div>
+          <h3>Top 1% — Rank 32/3,578</h3>
+          <p>Multi-Class Prediction of Obesity Risk.</p>
         </div>
-      </section>
+      </div>
+      <div class="proj">
+        <div>
+          <div class="tag">KAGGLE</div>
+          <h3>Top 8% — Rank 141/1,908</h3>
+          <p>Binary Prediction of Smoker Status.</p>
+        </div>
+      </div>
+      <div class="proj">
+        <div>
+          <div class="tag">TOOLKIT</div>
+          <h3>Core skills</h3>
+          <p>Python, C++, C, Bash, SQL · PyTorch, TensorFlow, Scikit-learn, OpenCV · NumPy, Pandas, SciPy, Matplotlib · Git, Linux, Docker, Kubernetes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      <section class="projects">
-        <h2>Projects</h2>
-        <div class="proj">
-          <h3>Multi-Object Tracking Using RNN</h3>
-          <p>Developed a robust RNN-based model for real-time multi-object tracking in videos using PyTorch and OpenCV.</p>
-          <a href="https://github.com/Rish-1903/MultiObjectTrackingUsingRNN" class="btn">Code</a>
-        </div>
-        <div class="proj">
-          <h3>Image Segmentation using Coresets</h3>
-          <p>Implemented coreset-based algorithms for image segmentation, ensuring accurate evaluation of practical and uniform sampling-based approaches.</p>
-          <a href="https://github.com/OnePunchMonk/Coresets-for-Image-Segmentation" class="btn">Code</a>
-        </div>
-      </section>
+  <section class="sheet" id="contact">
+    <div class="sheet-tag">SHEET <span>07</span> / 07 — CONTACT</div>
+    <h2 style="font-size:1.6rem;">Contact</h2>
+    <p style="color:var(--paper-dim); margin-top:14px; max-width:56ch;">Open to research collaboration, internships, and roles in perception, embodied AI, and autonomous systems.</p>
+    <div class="contact-grid">
+      <a class="clink" href="mailto:rishabh019@e.ntu.edu.sg">rishabh019@e.ntu.edu.sg</a>
+      <a class="clink" href="tel:+6586953268">+65 8695 3268</a>
+      <a class="clink" href="#">LinkedIn</a>
+      <a class="clink" href="#">GitHub</a>
+    </div>
+  </section>
 
-      <section class="achievements">
-        <h2>Achievements</h2>
-        <ul>
-          <li><b>Winner:</b> Epoch IIITD Hackathon 2024 (Infosys Centre of AI, IIITD).</li>
-          <a href="https://credsverse.com/credentials/b206718b-a35a-4925-8e4f-08c0a3bac101" class="btn">Certificate</a>
-        </ul>
-      </section>
-    </main>
-  </div>
+</main>
+
+<footer>
+  <span>RISHABH DANG © 2026</span>
+  <span>BUILT FOR ROBOTICS RESEARCH</span>
+</footer>
+
+<script>
+  var hx = document.getElementById('hx');
+  var hy = document.getElementById('hy');
+  window.addEventListener('pointermove', function(e){
+    if(!hx) return;
+    hx.textContent = String(Math.round(e.clientX)).padStart(3,'0');
+    hy.textContent = String(Math.round(e.clientY)).padStart(3,'0');
+  });
+</script>
+
 </body>
 </html>
